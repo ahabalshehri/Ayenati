@@ -447,6 +447,20 @@
       </button>
       <span onclick="event.stopPropagation();clearSavedData()" style="font-size:12px;color:var(--text3);cursor:pointer;margin-left:10px;">✕ Clear</span>
     </div>
+    <div onclick="event.stopPropagation()" style="margin-top:16px;display:flex;gap:6px;max-width:480px;margin-left:auto;margin-right:auto;">
+      <input id="urlInput" type="url" placeholder="Or paste a direct file URL (OneDrive, etc.)"
+        style="flex:1;font-size:13px;font-family:var(--font);padding:6px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;"
+        onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border2)'"
+        onkeydown="if(event.key==='Enter')loadFromUrl()">
+      <button onclick="loadFromUrl()" style="background:var(--blue);color:#fff;border:none;border-radius:var(--radius);padding:6px 14px;font-size:13px;font-family:var(--font);cursor:pointer;white-space:nowrap;">Load</button>
+    </div>
+    <div id="urlError" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></div>
+    <div id="restoreBtn" style="display:none;margin-top:14px;">
+      <button onclick="event.stopPropagation();restoreLastSession()" style="background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue);border-radius:var(--radius);padding:6px 16px;font-size:13px;font-family:var(--font);cursor:pointer;">
+        ↩ Restore last session: <span id="restoreLabel"></span>
+      </button>
+      <span onclick="event.stopPropagation();clearSavedData()" style="font-size:12px;color:var(--text3);cursor:pointer;margin-left:10px;">✕ Clear</span>
+    </div>
     <div class="demo-link" onclick="event.stopPropagation();loadDemo()">▶ Load demo data instead</div>
   </div>
 
@@ -628,6 +642,55 @@ function buildHmap(sample) {
     hmap[key] = findCol(headers, variants);
   }
   return hmap;
+}
+
+/* ── Load from URL ── */
+function loadFromUrl() {
+  const url = document.getElementById('urlInput').value.trim();
+  const errEl = document.getElementById('urlError');
+  errEl.style.display = 'none';
+  if (!url) return;
+
+  // Convert OneDrive share links to direct download
+  let fetchUrl = url;
+  if (url.includes('1drv.ms') || url.includes('onedrive.live.com')) {
+    fetchUrl = url.replace('redir?', 'download?').replace('&e=', '&download=1&e=');
+    if (!fetchUrl.includes('download=1')) fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + 'download=1';
+  }
+  // Convert Google Drive share links to direct download
+  if (url.includes('drive.google.com/file/d/')) {
+    const m = url.match(/\/d\/([^/]+)/);
+    if (m) fetchUrl = 'https://drive.google.com/uc?export=download&id=' + m[1];
+  }
+
+  const btn = document.querySelector('#urlInput + button');
+  btn.textContent = 'Loading…';
+  btn.disabled = true;
+
+  fetch(fetchUrl)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.arrayBuffer();
+    })
+    .then(buf => {
+      const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rawA1 = cellVal(ws, 'A1'), rawA2 = cellVal(ws, 'A2'), rawA3 = cellVal(ws, 'A3');
+      let exported = rawA3, username = '';
+      const userMatch = rawA3.match(/user[:\s]+(.+)$/i);
+      if (userMatch) { username = userMatch[1].trim(); exported = rawA3.replace(userMatch[0], '').replace(/[,|\s]+$/, '').trim(); }
+      const meta = { hospital: rawA1, dateRange: rawA2, exported, username };
+      const raw = XLSX.utils.sheet_to_json(ws, { defval: '', range: 4 });
+      const filename = fetchUrl.split('/').pop().split('?')[0] || 'file';
+      processData(raw, filename, meta);
+      saveToStorage(filename);
+      document.getElementById('urlInput').value = '';
+    })
+    .catch(err => {
+      errEl.textContent = 'Could not load file: ' + (err.message || 'Check the URL and make sure it is a direct download link.');
+      errEl.style.display = 'block';
+    })
+    .finally(() => { btn.textContent = 'Load'; btn.disabled = false; });
 }
 
 /* ── File handling ── */
