@@ -441,6 +441,12 @@
     </div>
     <div class="upload-title">Drop your HIS export here</div>
     <div class="upload-hint">Supports .xlsx, .xls, .csv &nbsp;·&nbsp; <span>browse files</span></div>
+    <div id="restoreBtn" style="display:none;margin-top:14px;">
+      <button onclick="event.stopPropagation();restoreLastSession()" style="background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue);border-radius:var(--radius);padding:6px 16px;font-size:13px;font-family:var(--font);cursor:pointer;">
+        ↩ Restore last session: <span id="restoreLabel"></span>
+      </button>
+      <span onclick="event.stopPropagation();clearSavedData()" style="font-size:12px;color:var(--text3);cursor:pointer;margin-left:10px;">✕ Clear</span>
+    </div>
     <div class="demo-link" onclick="event.stopPropagation();loadDemo()">▶ Load demo data instead</div>
   </div>
 
@@ -546,6 +552,43 @@
 let allData = [];
 let lastMeta = {};
 
+/* ── localStorage persistence ── */
+const STORAGE_KEY = 'ayenati_last_session';
+
+function saveToStorage(filename) {
+  try {
+    const payload = JSON.stringify({ filename, meta: lastMeta, data: allData });
+    localStorage.setItem(STORAGE_KEY, payload);
+  } catch(e) { /* quota exceeded — silently skip */ }
+}
+
+function restoreLastSession() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const { filename, meta, data } = JSON.parse(raw);
+    allData = data;
+    showDashboard(`Restored: "${filename}" (${data.length.toLocaleString()} records)`, meta);
+  } catch(e) { localStorage.removeItem(STORAGE_KEY); }
+}
+
+function clearSavedData() {
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('restoreBtn').style.display = 'none';
+}
+
+function checkStoredSession() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const { filename, data } = JSON.parse(raw);
+    document.getElementById('restoreLabel').textContent = filename + ' (' + (data.length||0).toLocaleString() + ' records)';
+    document.getElementById('restoreBtn').style.display = 'block';
+  } catch(e) { localStorage.removeItem(STORAGE_KEY); }
+}
+
+document.addEventListener('DOMContentLoaded', checkStoredSession);
+
 /* ── Column mapping ── */
 const COL_VARIANTS = {
   testDesc:     ['test description','testdescription'],
@@ -630,6 +673,7 @@ function readFile(file) {
       const meta = { hospital: rawA1, dateRange: rawA2, exported, username };
       const raw = XLSX.utils.sheet_to_json(ws, { defval: '', range: 4 });
       processData(raw, file.name, meta);
+      saveToStorage(file.name);
     } catch(err) {
       alert('Could not parse file: ' + err.message);
     }
