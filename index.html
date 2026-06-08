@@ -488,6 +488,7 @@
         <select id="statusFilter" onchange="renderTable()"><option value="">All statuses</option></select>
         <select id="divFilter" onchange="renderTable()"><option value="">All divisions</option></select>
         <select id="sourceFilter" onchange="renderTable()"><option value="">All sources</option></select>
+        <select id="sampleStatusFilter" onchange="renderTable()"><option value="">All sample statuses</option></select>
         <span class="filter-count" id="filterCount"></span>
       </div>
       <div class="table-wrap">
@@ -831,9 +832,10 @@ function renderCharts() {
 }
 
 function populateFilters() {
-  const statuses = [...new Set(allData.map(r=>r.testStatus).filter(Boolean))].sort();
-  const divs     = [...new Set(allData.map(r=>r.division).filter(Boolean))].sort();
-  const srcs     = [...new Set(allData.map(r=>r.source).filter(Boolean))].sort();
+  const statuses    = [...new Set(allData.map(r=>r.testStatus).filter(Boolean))].sort();
+  const divs        = [...new Set(allData.map(r=>r.division).filter(Boolean))].sort();
+  const srcs        = [...new Set(allData.map(r=>r.source).filter(Boolean))].sort();
+  const sampleStats = [...new Set(allData.map(r=>r.sampleStatus).filter(Boolean))].sort();
 
   document.getElementById('statusFilter').innerHTML =
     '<option value="">All statuses</option>' + statuses.map(s=>`<option>${s}</option>`).join('');
@@ -841,6 +843,8 @@ function populateFilters() {
     '<option value="">All divisions</option>' + divs.map(s=>`<option>${s}</option>`).join('');
   document.getElementById('sourceFilter').innerHTML =
     '<option value="">All sources</option>' + srcs.map(s=>`<option>${s}</option>`).join('');
+  document.getElementById('sampleStatusFilter').innerHTML =
+    '<option value="">All sample statuses</option>' + sampleStats.map(s=>`<option>${s}</option>`).join('');
 }
 
 /* ── Table ── */
@@ -882,11 +886,13 @@ function renderTable() {
   const sf  = document.getElementById('statusFilter').value;
   const df  = document.getElementById('divFilter').value;
   const rf  = document.getElementById('sourceFilter').value;
+  const ssf = document.getElementById('sampleStatusFilter').value;
 
   let rows = allData.filter(r => {
-    if (sf && r.testStatus !== sf) return false;
-    if (df && r.division   !== df) return false;
-    if (rf && r.source     !== rf) return false;
+    if (sf  && r.testStatus   !== sf)  return false;
+    if (df  && r.division     !== df)  return false;
+    if (rf  && r.source       !== rf)  return false;
+    if (ssf && r.sampleStatus !== ssf) return false;
     if (q) {
       const hay = [r.patName, r.barcode, r.mrn, r.testDesc, r.orderNo, r.testId].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
@@ -987,11 +993,13 @@ function openPrintModal() {
   const sf = document.getElementById('statusFilter').value;
   const df = document.getElementById('divFilter').value;
   const rf = document.getElementById('sourceFilter').value;
+  const ssf = document.getElementById('sampleStatusFilter').value;
 
   let rows = allData.filter(r => {
-    if (sf && r.testStatus !== sf) return false;
-    if (df && r.division   !== df) return false;
-    if (rf && r.source     !== rf) return false;
+    if (sf  && r.testStatus   !== sf)  return false;
+    if (df  && r.division     !== df)  return false;
+    if (rf  && r.source       !== rf)  return false;
+    if (ssf && r.sampleStatus !== ssf) return false;
     if (q) {
       const hay = [r.patName, r.barcode, r.mrn, r.testDesc, r.orderNo].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
