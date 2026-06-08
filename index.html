@@ -312,11 +312,15 @@
     text-align: center;
     white-space: nowrap;
   }
-  /* Row 4: hospital */
-  .label-hospital {
-    font-size: 7.5pt; color: #777;
-    text-align: center; margin-top: 1mm;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* Row 4: tests list */
+  .label-tests {
+    font-size: 7.5pt; color: #444;
+    text-align: center; margin-top: 1.5mm;
+    white-space: normal; line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
   .print-actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
   .print-summary { font-size: 11px; color: #555; margin-bottom: 10px; }
@@ -328,6 +332,11 @@
   }
   @media print {
     body > *:not(#printContainer) { display: none !important; }
+    html, body {
+      background: #fff !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
     #printContainer {
       display: block !important;
       width: 100%;
@@ -335,6 +344,7 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
       color: #111;
+      background: #fff !important;
     }
     .print-header { border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 14px; }
     .print-hospital { font-size: 15px; font-weight: 700; }
@@ -353,7 +363,7 @@
     .label-barcode-wrap { width: 100%; display: flex; align-items: center; justify-content: center; margin-bottom: 1mm; }
     .label-barcode-wrap canvas { display: block; max-width: 100%; }
     .label-bcnum { font-size: 9.5pt; font-weight: 600; font-family: 'Consolas','Courier New',monospace; letter-spacing: 0.05em; color: #111; text-align: center; white-space: nowrap; }
-    .label-hospital { font-size: 7.5pt; color: #777; text-align: center; margin-top: 1mm; }
+    .label-tests { font-size: 7.5pt; color: #444; text-align: center; margin-top: 1.5mm; white-space: normal; line-height: 1.4; }
 
     /* Page footer with page numbers */
     @page {
@@ -416,10 +426,6 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
       GitHub
     </a>
-    <button class="btn" onclick="showSettings()" title="Cloud sync settings">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
-    </button>
     <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload Excel
@@ -445,26 +451,6 @@
     </div>
     <div class="upload-title">Drop your HIS export here</div>
     <div class="upload-hint">Supports .xlsx, .xls, .csv &nbsp;·&nbsp; <span>browse files</span></div>
-    <div id="restoreBtn" style="display:none;margin-top:14px;">
-      <button onclick="event.stopPropagation();restoreLastSession()" style="background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue);border-radius:var(--radius);padding:6px 16px;font-size:13px;font-family:var(--font);cursor:pointer;">
-        ↩ Restore last session: <span id="restoreLabel"></span>
-      </button>
-      <span onclick="event.stopPropagation();clearSavedData()" style="font-size:12px;color:var(--text3);cursor:pointer;margin-left:10px;">✕ Clear</span>
-    </div>
-    <div onclick="event.stopPropagation()" style="margin-top:16px;display:flex;gap:6px;max-width:480px;margin-left:auto;margin-right:auto;">
-      <input id="urlInput" type="url" placeholder="Or paste a direct file URL (OneDrive, etc.)"
-        style="flex:1;font-size:13px;font-family:var(--font);padding:6px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;"
-        onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border2)'"
-        onkeydown="if(event.key==='Enter')loadFromUrl()">
-      <button onclick="loadFromUrl()" style="background:var(--blue);color:#fff;border:none;border-radius:var(--radius);padding:6px 14px;font-size:13px;font-family:var(--font);cursor:pointer;white-space:nowrap;">Load</button>
-    </div>
-    <div id="urlError" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></div>
-    <div id="restoreBtn" style="display:none;margin-top:14px;">
-      <button onclick="event.stopPropagation();restoreLastSession()" style="background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue);border-radius:var(--radius);padding:6px 16px;font-size:13px;font-family:var(--font);cursor:pointer;">
-        ↩ Restore last session: <span id="restoreLabel"></span>
-      </button>
-      <span onclick="event.stopPropagation();clearSavedData()" style="font-size:12px;color:var(--text3);cursor:pointer;margin-left:10px;">✕ Clear</span>
-    </div>
     <div class="demo-link" onclick="event.stopPropagation();loadDemo()">▶ Load demo data instead</div>
   </div>
 
@@ -563,172 +549,12 @@
   </div>
 
   </div><!-- /dashboard -->
-
-  <!-- Settings view -->
-  <div id="settingsView" style="display:none;max-width:520px;margin:0 auto;">
-    <button onclick="hideSettings()" class="btn" style="margin-bottom:1rem;">← Back</button>
-    <div style="background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:1.5rem;margin-bottom:1rem;">
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Cloud Sync via GitHub</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;">After each upload, data is saved to this repository so any device can load it automatically when opening the link.</div>
-      <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:5px;">GitHub Personal Access Token</label>
-      <input id="ghTokenInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-        style="width:100%;font-size:13px;font-family:var(--font);padding:7px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);outline:none;margin-bottom:8px;"
-        onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border2)'">
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button onclick="saveGhToken()" class="btn btn-primary" style="font-size:13px;">Save token</button>
-        <button onclick="clearGhToken()" class="btn" style="font-size:13px;">Clear</button>
-        <span id="tokenStatus" style="font-size:12px;color:var(--text3);"></span>
-      </div>
-      <div style="margin-top:1rem;padding:0.75rem;background:var(--bg2);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.6;">
-        <b>How to create a token:</b><br>
-        GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → New token<br>
-        Set <b>Repository access</b> to this repo only, and grant <b>Contents: Read and write</b>.
-      </div>
-    </div>
-  </div>
-
 </div><!-- /main -->
 
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
 let allData = [];
 let lastMeta = {};
-
-/* ── GitHub sync ── */
-const GH_REPO   = 'ahabalshehri/Ayenati';
-const GH_FILE   = 'data/session.json';
-const GH_RAW    = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_FILE;
-const GH_TOKEN_KEY = 'ayenati_gh_token';
-
-function getGhToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
-
-function saveGhToken() {
-  const t = document.getElementById('ghTokenInput').value.trim();
-  if (!t) return;
-  localStorage.setItem(GH_TOKEN_KEY, t);
-  document.getElementById('tokenStatus').textContent = '✓ Saved';
-  document.getElementById('tokenStatus').style.color = 'var(--green)';
-}
-
-function clearGhToken() {
-  localStorage.removeItem(GH_TOKEN_KEY);
-  document.getElementById('ghTokenInput').value = '';
-  document.getElementById('tokenStatus').textContent = 'Cleared';
-  document.getElementById('tokenStatus').style.color = 'var(--text3)';
-}
-
-async function pushToGitHub(filename) {
-  const token = getGhToken();
-  if (!token) return;
-  setSyncStatus('Saving to GitHub…', 'var(--text3)');
-  try {
-    const payload = JSON.stringify({ filename, meta: lastMeta, data: allData });
-    const b64 = btoa(unescape(encodeURIComponent(payload)));
-    // Get current file SHA (needed for update)
-    let sha = '';
-    const check = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
-      { headers: { Authorization: 'token ' + token } });
-    if (check.ok) { const j = await check.json(); sha = j.sha; }
-    const body = { message: 'Update last session: ' + filename, content: b64 };
-    if (sha) body.sha = sha;
-    const res = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, {
-      method: 'PUT',
-      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (res.ok) setSyncStatus('✓ Saved to GitHub — loads on any device', 'var(--green)');
-    else setSyncStatus('GitHub save failed (' + res.status + ')', 'var(--red)');
-  } catch(e) {
-    setSyncStatus('GitHub save failed: ' + e.message, 'var(--red)');
-  }
-}
-
-async function loadFromGitHub() {
-  try {
-    const res = await fetch(GH_RAW + '?t=' + Date.now());
-    if (!res.ok) return false;
-    const { filename, meta, data } = await res.json();
-    if (!data || !data.length) return false;
-    allData = data;
-    showDashboard('Auto-loaded last session: "' + filename + '" (' + data.length.toLocaleString() + ' records) — synced from GitHub', meta);
-    return true;
-  } catch(e) { return false; }
-}
-
-function setSyncStatus(msg, color) {
-  let el = document.getElementById('syncStatus');
-  if (!el) {
-    el = document.createElement('span');
-    el.id = 'syncStatus';
-    el.style.cssText = 'font-size:12px;margin-left:12px;';
-    const banner = document.getElementById('infoBanner');
-    if (banner) banner.appendChild(el);
-  }
-  el.textContent = msg;
-  el.style.color = color;
-}
-
-/* ── Settings nav ── */
-function showSettings() {
-  document.getElementById('uploadZone').style.display   = 'none';
-  document.getElementById('dashboard').style.display    = 'none';
-  document.getElementById('settingsView').style.display = 'block';
-  const tok = getGhToken();
-  document.getElementById('ghTokenInput').value = tok ? '' : '';
-  document.getElementById('ghTokenInput').placeholder = tok ? '••••••••••••• (token saved)' : 'ghp_xxxxxxxxxxxxxxxxxxxx';
-  document.getElementById('tokenStatus').textContent = tok ? '✓ Token configured' : 'No token set';
-  document.getElementById('tokenStatus').style.color = tok ? 'var(--green)' : 'var(--text3)';
-}
-
-function hideSettings() {
-  document.getElementById('settingsView').style.display = 'none';
-  if (allData.length) {
-    document.getElementById('dashboard').style.display = 'block';
-  } else {
-    document.getElementById('uploadZone').style.display = 'block';
-    checkStoredSession();
-  }
-}
-
-/* ── localStorage persistence ── */
-const STORAGE_KEY = 'ayenati_last_session';
-
-function saveToStorage(filename) {
-  try {
-    const payload = JSON.stringify({ filename, meta: lastMeta, data: allData });
-    localStorage.setItem(STORAGE_KEY, payload);
-  } catch(e) { /* quota exceeded — silently skip */ }
-}
-
-function restoreLastSession() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const { filename, meta, data } = JSON.parse(raw);
-    allData = data;
-    showDashboard(`Restored: "${filename}" (${data.length.toLocaleString()} records)`, meta);
-  } catch(e) { localStorage.removeItem(STORAGE_KEY); }
-}
-
-function clearSavedData() {
-  localStorage.removeItem(STORAGE_KEY);
-  document.getElementById('restoreBtn').style.display = 'none';
-}
-
-function checkStoredSession() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const { filename, data } = JSON.parse(raw);
-    document.getElementById('restoreLabel').textContent = filename + ' (' + (data.length||0).toLocaleString() + ' records)';
-    document.getElementById('restoreBtn').style.display = 'block';
-  } catch(e) { localStorage.removeItem(STORAGE_KEY); }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  checkStoredSession();
-  await loadFromGitHub(); // auto-load from GitHub if data exists
-});
 
 /* ── Column mapping ── */
 const COL_VARIANTS = {
@@ -769,55 +595,6 @@ function buildHmap(sample) {
     hmap[key] = findCol(headers, variants);
   }
   return hmap;
-}
-
-/* ── Load from URL ── */
-function loadFromUrl() {
-  const url = document.getElementById('urlInput').value.trim();
-  const errEl = document.getElementById('urlError');
-  errEl.style.display = 'none';
-  if (!url) return;
-
-  // Convert OneDrive share links to direct download
-  let fetchUrl = url;
-  if (url.includes('1drv.ms') || url.includes('onedrive.live.com')) {
-    fetchUrl = url.replace('redir?', 'download?').replace('&e=', '&download=1&e=');
-    if (!fetchUrl.includes('download=1')) fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + 'download=1';
-  }
-  // Convert Google Drive share links to direct download
-  if (url.includes('drive.google.com/file/d/')) {
-    const m = url.match(/\/d\/([^/]+)/);
-    if (m) fetchUrl = 'https://drive.google.com/uc?export=download&id=' + m[1];
-  }
-
-  const btn = document.querySelector('#urlInput + button');
-  btn.textContent = 'Loading…';
-  btn.disabled = true;
-
-  fetch(fetchUrl)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.arrayBuffer();
-    })
-    .then(buf => {
-      const wb = XLSX.read(buf, { type: 'array', cellDates: true });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rawA1 = cellVal(ws, 'A1'), rawA2 = cellVal(ws, 'A2'), rawA3 = cellVal(ws, 'A3');
-      let exported = rawA3, username = '';
-      const userMatch = rawA3.match(/user[:\s]+(.+)$/i);
-      if (userMatch) { username = userMatch[1].trim(); exported = rawA3.replace(userMatch[0], '').replace(/[,|\s]+$/, '').trim(); }
-      const meta = { hospital: rawA1, dateRange: rawA2, exported, username };
-      const raw = XLSX.utils.sheet_to_json(ws, { defval: '', range: 4 });
-      const filename = fetchUrl.split('/').pop().split('?')[0] || 'file';
-      processData(raw, filename, meta);
-      saveToStorage(filename);
-      document.getElementById('urlInput').value = '';
-    })
-    .catch(err => {
-      errEl.textContent = 'Could not load file: ' + (err.message || 'Check the URL and make sure it is a direct download link.');
-      errEl.style.display = 'block';
-    })
-    .finally(() => { btn.textContent = 'Load'; btn.disabled = false; });
 }
 
 /* ── File handling ── */
@@ -863,8 +640,6 @@ function readFile(file) {
       const meta = { hospital: rawA1, dateRange: rawA2, exported, username };
       const raw = XLSX.utils.sheet_to_json(ws, { defval: '', range: 4 });
       processData(raw, file.name, meta);
-      saveToStorage(file.name);
-      pushToGitHub(file.name);
     } catch(err) {
       alert('Could not parse file: ' + err.message);
     }
@@ -1249,15 +1024,18 @@ function applyPrintFilter() {
 }
 
 function renderPrintLabels(unique) {
-  const m = lastMeta || {};
-  const hospital = m.hospital || 'Al-Majardah General Hospital';
-
   document.getElementById('pmSummary').textContent =
     unique.length + ' label' + (unique.length !== 1 ? 's' : '');
 
   const labelsHtml = unique.map((r, i) => {
     const bc  = r.barcode || '';
     const cid = 'lbc_' + i;
+    // Collect all tests for this barcode from allData
+    const testNames = allData
+      .filter(d => d.barcode === bc && d.testDesc)
+      .map(d => d.testDesc)
+      .filter((v, idx, arr) => arr.indexOf(v) === idx); // deduplicate
+    const testsLine = testNames.length ? testNames.join(' · ') : '—';
     return `<div class="label-card">
       <div class="label-row-name">
         <span class="label-patient">${r.patName || '—'}</span>
@@ -1265,7 +1043,7 @@ function renderPrintLabels(unique) {
       </div>
       <div class="label-barcode-wrap"><canvas id="${cid}"></canvas></div>
       <div class="label-bcnum">${bc}</div>
-      <div class="label-hospital">${hospital}</div>
+      <div class="label-tests">${testsLine}</div>
     </div>`;
   }).join('');
 
@@ -1302,6 +1080,13 @@ function printSingleLabel(bc) {
   document.getElementById('pmPrinted').textContent   = new Date().toLocaleString();
   document.getElementById('pmSummary').textContent   = '1 sample label';
 
+  // Collect all tests for this barcode
+  const singleTests = allData
+    .filter(d => d.barcode === bc && d.testDesc)
+    .map(d => d.testDesc)
+    .filter((v, idx, arr) => arr.indexOf(v) === idx);
+  const singleTestsLine = singleTests.length ? singleTests.join(' · ') : '—';
+
   document.getElementById('pmSamples').innerHTML = `<div class="label-card" style="max-width:90mm">
     <div class="label-row-name">
       <span class="label-patient">${r.patName || '—'}</span>
@@ -1309,7 +1094,7 @@ function printSingleLabel(bc) {
     </div>
     <div class="label-barcode-wrap"><canvas id="slbc"></canvas></div>
     <div class="label-bcnum">${bc}</div>
-    <div class="label-hospital">${hospital}</div>
+    <div class="label-tests">${singleTestsLine}</div>
   </div>`;
 
   document.getElementById('printModal').classList.add('open');
